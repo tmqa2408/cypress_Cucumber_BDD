@@ -7,14 +7,13 @@ module.exports = defineConfig({
     setupNodeEvents(on, config) {
       on("file:preprocessor", cucumber());
     },
+    baseUrl:'https://ecommerce-playground.lambdatest.io/index.php?route=common/home',
     reporter: 'mochawesome',
-    reporterOptions: {
-      reportDir: 'cypress/results',
-      overwrite: false,
-      html: false,
-      json: true,
-    },
-    baseUrl:'https://ecommerce-playground.lambdatest.io/index.php?route=common/home'
+  reporterOptions: {
+    reportDir: 'cypress/results',
+    overwrite: false,
+    html: false,
+    json: true,
   
   },
   
@@ -25,14 +24,3 @@ module.exports = defineConfig({
 });
 
 
-const { defineConfig } = require('cypress')
-
-module.exports = defineConfig({
-  reporter: 'mochawesome',
-  reporterOptions: {
-    reportDir: 'cypress/results',
-    overwrite: false,
-    html: false,
-    json: true,
-  },
-})
