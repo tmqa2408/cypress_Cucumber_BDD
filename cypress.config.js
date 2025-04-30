@@ -10,6 +10,7 @@ module.exports = defineConfig({
       baseUrl:'https://ecommerce-playground.lambdatest.io/index.php?route=common/home',
       reporter: 'mochawesome',
       reporterOptions: {
+      reportDir: 'cypress/results',  
       overwrite: false,
       html: false,
       json: true,
