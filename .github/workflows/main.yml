@@ -27,9 +27,9 @@ jobs:
 
       - name: Check if report folder exists
         run: |
-          if [ -d cypress/reports ]; then
+          if [ -d cypress//mochawesome-report ]; then
             echo "✅ Report folder exists"
-            ls -la cypress/reports
+            ls -la cypress//mochawesome-report
           else
             echo "❌ Report folder does not exist for ${{ matrix.browsers }}"
             exit 1
