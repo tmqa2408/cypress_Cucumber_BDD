@@ -19,6 +19,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Mocha
+        run: npm install mocha 
+    
+      - name: Install mochawesome
+        run: npm install mochawesome 
+
       - name: Install mochawesome tools
         run: npm install mochawesome mochawesome-merge mochawesome-report-generator --save-dev
 
