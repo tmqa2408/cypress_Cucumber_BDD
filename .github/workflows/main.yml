@@ -27,20 +27,20 @@ jobs:
 
       - name: Check if report folder exists
         run: |
-          if [ -d cypress/reports ]; then
+          if [ -d cypress/results ]; then
             echo "✅ Report folder exists"
-            ls -la cypress/reports
+            ls -la cypress/results
           else
             echo "❌ Report folder does not exist for ${{ matrix.browsers }}"
             exit 1
           fi
 
-      - name: Merge Mochawesome Reports
+      - name: Merge Mochawesome results
         run: |
           shopt -s nullglob
-          files=(cypress/reports/*.json)
+          files=(cypress/results/*.json)
           if (( ${#files[@]} )); then
-            npx mochawesome-merge "${files[@]}" > cypress/reports/merged-report.json
+            npx mochawesome-merge "${files[@]}" > cypress/results/merged-report.json
           else
             echo "❌ No JSON files found to merge for ${{ matrix.browsers }}"
             exit 1
@@ -48,12 +48,12 @@ jobs:
 
       - name: Generate HTML Report
         run: |
-          npx marge cypress/reports/merged-report.json \
-            --reportDir cypress/reports \
+          npx marge cypress/results/merged-report.json \
+            --reportDir cypress/results \
             -f "${{ matrix.browsers }}-report.html"
 
       - name: Upload HTML Report
         uses: actions/upload-artifact@v4
         with:
           name: Cypress HTML Report ${{ matrix.browsers }}
-          path: cypress/reports/${{ matrix.browsers }}-report.html
+          path: cypress/results/${{ matrix.browsers }}-report.html
