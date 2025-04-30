@@ -1,6 +1,6 @@
 name: Cypress Tests
 
-on: 
+on:
   push:
   workflow_dispatch:
 
@@ -19,14 +19,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install some additional dependencies
+      - name: Install mochawesome dependencies
         run: npm install mochawesome mochawesome-merge mochawesome-report-generator --save-dev
 
       - name: Run Cypress tests in ${{ matrix.browsers }}
         uses: cypress-io/github-action@v6
         with:
           browser: ${{ matrix.browsers }}
-          command: npx cypress run --browser ${{ matrix.browsers }} --reporter mochawesome
+          command: npx cypress run --browser ${{ matrix.browsers }}
 
       - name: Check if report folder exists
         run: |

@@ -1,26 +1,26 @@
 const { defineConfig } = require("cypress");
 const cucumber = require("cypress-cucumber-preprocessor").default;
+
 module.exports = defineConfig({
   projectId: 'vgsrrw',
-    e2e: {
-      specPattern: "**/*.feature",
-      setupNodeEvents(on, config) {
-        on("file:preprocessor", cucumber());
-      },
-      baseUrl:'https://ecommerce-playground.lambdatest.io/index.php?route=common/home',
-      reporter: 'mochawesome',
-      reporterOptions: {
-      reportDir: 'cypress/results',  
-      overwrite: false,
-      html: false,
-      json: true,
+
+  // ✅ Глобальные настройки репортера
+  reporter: 'mochawesome',
+  reporterOptions: {
+    reportDir: 'cypress/results',
+    overwrite: false,
+    html: false,
+    json: true,
+  },
+
+  e2e: {
+    specPattern: "**/*.feature",
+    baseUrl: 'https://ecommerce-playground.lambdatest.io/index.php?route=common/home',
+    setupNodeEvents(on, config) {
+      on("file:preprocessor", cucumber());
     },
   },
-  
-
-  // "env":{
-  //  "URL" : "https://ecommerce-playground.lambdatest.io/index.php?route=common/home"
-  // }
 });
+
 
 
