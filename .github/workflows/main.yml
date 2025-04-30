@@ -1,6 +1,6 @@
 name: Cypress Tests
 
-on: 
+on:
   push:
   workflow_dispatch:
 
@@ -23,10 +23,14 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           browsers: ${{ matrix.browsers }}
-          command: npx cypress run --browser ${{ matrix.browsers }} --reporter mochawesome --reporter-options reportDir=cypress/reports/${{ matrix.browsers }},overwrite=false,html=false,json=true
+          command: >
+            npx cypress run
+            --browser ${{ matrix.browsers }}
+            --reporter mochawesome
+            --reporter-options reportDir=cypress/reports/${{ matrix.browsers }},overwrite=false,html=false,json=true
 
       - name: List report files
-        run: ls -lah cypress/reports/${{ matrix.browsers }} || echo "No reports found"
+        run: ls -la cypress/reports/${{ matrix.browsers }}
 
       - name: Merge Mochawesome Reports
         run: |
@@ -40,7 +44,11 @@ jobs:
           fi
 
       - name: Generate HTML Reports
-        run: npx marge cypress/reports/${{ matrix.browsers }}/merged-reports.json --reportDir cypress/reports/${{ matrix.browsers }} -f "${{ matrix.browsers }}-report.html"
+        run: >
+          npx marge
+          cypress/reports/${{ matrix.browsers }}/merged-reports.json
+          --reportDir cypress/reports/${{ matrix.browsers }}
+          -f "${{ matrix.browsers }}-report.html"
 
       - name: Upload HTML Reports
         uses: actions/upload-artifact@v4
