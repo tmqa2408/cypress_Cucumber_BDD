@@ -1,6 +1,6 @@
 name: Cypress Tests
 
-on:
+on: 
   push:
   workflow_dispatch:
 
@@ -29,8 +29,15 @@ jobs:
             --reporter mochawesome
             --reporter-options reportDir=cypress/reports/${{ matrix.browsers }},overwrite=false,html=false,json=true
 
-      - name: List report files
-        run: ls -la cypress/reports/${{ matrix.browsers }}
+      - name: Check if report folder exists
+        run: |
+          if [ -d cypress/reports/${{ matrix.browsers }} ]; then
+            echo "✅ Report folder exists"
+            ls -la cypress/reports/${{ matrix.browsers }}
+          else
+            echo "❌ Report folder does not exist for ${{ matrix.browsers }}"
+            exit 1
+          fi
 
       - name: Merge Mochawesome Reports
         run: |
@@ -44,11 +51,10 @@ jobs:
           fi
 
       - name: Generate HTML Reports
-        run: >
-          npx marge
-          cypress/reports/${{ matrix.browsers }}/merged-reports.json
-          --reportDir cypress/reports/${{ matrix.browsers }}
-          -f "${{ matrix.browsers }}-report.html"
+        run: |
+          npx marge cypress/reports/${{ matrix.browsers }}/merged-reports.json \
+            --reportDir cypress/reports/${{ matrix.browsers }} \
+            -f "${{ matrix.browsers }}-report.html"
 
       - name: Upload HTML Reports
         uses: actions/upload-artifact@v4
