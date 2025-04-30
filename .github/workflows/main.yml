@@ -1,4 +1,4 @@
-name: Cypress Tests
+name: Cypress Tests with GitHub Pages
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   cypress-run:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install mochawesome dependencies
+      - name: Install mochawesome tools
         run: npm install mochawesome mochawesome-merge mochawesome-report-generator --save-dev
 
       - name: Run Cypress tests in ${{ matrix.browsers }}
@@ -28,35 +28,34 @@ jobs:
           browser: ${{ matrix.browsers }}
           command: npx cypress run --browser ${{ matrix.browsers }}
 
-      - name: Check if report folder exists
+      - name: Merge reports
         run: |
-          if [ -d cypress/results ]; then
-            echo "✅ Report folder exists"
-            ls -la cypress/results
-          else
-            echo "❌ Report folder does not exist for ${{ matrix.browsers }}"
-            exit 1
-          fi
+          mkdir -p gh-pages
+          npx mochawesome-merge cypress/results/*.json > merged-report.json
+          npx marge merged-report.json --reportDir gh-pages --reportFilename ${{ matrix.browsers }}-report.html
 
-      - name: Merge Mochawesome results
-        run: |
-          shopt -s nullglob
-          files=(cypress/results/*.json)
-          if (( ${#files[@]} )); then
-            npx mochawesome-merge "${files[@]}" > cypress/results/merged-report.json
-          else
-            echo "❌ No JSON files found to merge for ${{ matrix.browsers }}"
-            exit 1
-          fi
-
-      - name: Generate HTML Report
-        run: |
-          npx marge cypress/results/merged-report.json \
-            --reportDir cypress/results \
-            -f "${{ matrix.browsers }}-report.html"
-
-      - name: Upload HTML Report
+      - name: Upload HTML to artifact (optional debug)
         uses: actions/upload-artifact@v4
         with:
           name: Cypress HTML Report ${{ matrix.browsers }}
-          path: cypress/results/${{ matrix.browsers }}-report.html
+          path: gh-pages/${{ matrix.browsers }}-report.html
+
+  deploy-gh-pages:
+    needs: cypress-run
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download HTML Reports
+        uses: actions/download-artifact@v4
+        with:
+          path: gh-pages
+
+      - name: Deploy to GitHub Pages 🚀
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: gh-pages

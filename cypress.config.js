@@ -3,8 +3,6 @@ const cucumber = require("cypress-cucumber-preprocessor").default;
 
 module.exports = defineConfig({
   projectId: 'vgsrrw',
-
-  // ✅ Глобальные настройки репортера
   reporter: 'mochawesome',
   reporterOptions: {
     reportDir: 'cypress/results',
@@ -12,7 +10,6 @@ module.exports = defineConfig({
     html: false,
     json: true,
   },
-
   e2e: {
     specPattern: "**/*.feature",
     baseUrl: 'https://ecommerce-playground.lambdatest.io/index.php?route=common/home',
@@ -21,6 +18,3 @@ module.exports = defineConfig({
     },
   },
 });
-
-
-
