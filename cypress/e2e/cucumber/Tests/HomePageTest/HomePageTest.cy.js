@@ -1,26 +1,26 @@
 import { Given, When, Then, And } from "cypress-cucumber-preprocessor/steps"
- import homepage from "../../Pages/HomePage/HomePage.cy";
+import homepage from "../../Pages/HomePage/HomePage.cy";
  
- Given("I navigate to the HomePage Website", () => {
-     homepage.enterURL();
- });
- 
- When("I validate the title", () => {
-     homepage.verifyPageTitle();
- });
- 
- Then("I validate Top Trending Categories are present", () => {
-     homepage.verifyText();
- });
- 
- And("I click Laptops section", () => {
-     homepage.clickSubmitButton()
- });
- 
- // And("I validate the code response", () => {
- //     homepage.validateCode()
- // });
- 
- Then("I validate if this a Laptop page", () => {
-     homepage.validateText();
- });
+Given("I navigate to the HomePage Website", () => {
+    homepage.enterURL();
+});
+
+When("I validate the title", () => {
+    homepage.verifyPageTitle();
+});
+
+Then("I validate Top Trending Categories are present", () => {
+    homepage.verifyText();
+});
+
+And("I click Laptops section", () => {
+    homepage.clickSubmitButton()
+});
+
+// And("I validate the code response", () => {
+//     homepage.validateCode()
+// });
+
+Then("I validate if this a Laptop page", () => {
+    homepage.validateText();
+});
