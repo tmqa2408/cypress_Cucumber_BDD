@@ -61,8 +61,11 @@ jobs:
           find downloaded-artifacts -type d -exec cp -r {}/* combined-report/ \;
           ls -R combined-report
 
+      - name: Add .nojekyll file
+        run: touch gh-pages/combined-report/.nojekyll    
+
       - name: Deploy to GitHub Pages 🚀
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: combined-report
+          publish_dir: ./gh-pages/combined-report
