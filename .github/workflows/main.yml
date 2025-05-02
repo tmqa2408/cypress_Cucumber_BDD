@@ -61,8 +61,12 @@ jobs:
           find downloaded-artifacts -type d -exec cp -r {}/* combined-report/ \;
           ls -R combined-report
 
+      - name: Ensure publish dir exists
+        run: mkdir -p gh-pages/combined-report
+        
       - name: Add .nojekyll file
-        run: touch gh-pages/combined-report/.nojekyll    
+        run: touch gh-pages/combined-report/.nojekyll
+            
 
       - name: Deploy to GitHub Pages 🚀
         uses: peaceiris/actions-gh-pages@v3
