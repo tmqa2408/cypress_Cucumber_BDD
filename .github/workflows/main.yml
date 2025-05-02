@@ -1,62 +1,36 @@
-name: Cypress Tests with Allure + GitHub Pages
+name: Cypress Tests
 
 on:
   push:
-  workflow_dispatch:
+    branches:
+      - main
+  pull_request:
 
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        browsers: [chrome, firefox, edge]
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Allure reporter
-        run: |
-          npm install mocha-allure-reporter --save-dev
-          npm install -g allure-commandline --save-dev
-
-      - name: Run Cypress tests in ${{ matrix.browsers }}
+      - name: Run Cypress tests (Chrome)
         uses: cypress-io/github-action@v6
         with:
-          browser: ${{ matrix.browsers }}
-          command: npx cypress run --browser ${{ matrix.browsers }}
+          browser: chrome
+          start: npm run test
 
-      - name: Generate Allure HTML Report
-        run: |
-          mkdir -p allure-report
-          npx allure generate allure-results --clean -o allure-report
-
-      - name: Upload HTML Report as artifact (optional)
+      - name: Upload Allure results
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: Allure HTML Report ${{ matrix.browsers }}
-          path: allure-report
-
-  deploy-gh-pages:
-    needs: cypress-run
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Download Allure Reports
-        uses: actions/download-artifact@v4
-        with:
-          path: gh-pages
-
-      - name: Deploy to GitHub Pages 🚀
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: gh-pages
+          name: allure-results
+          path: allure-results
