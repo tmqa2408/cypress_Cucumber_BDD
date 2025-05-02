@@ -67,6 +67,8 @@ jobs:
       - name: Add .nojekyll file
         run: touch gh-pages/combined-report/.nojekyll
             
+      - name: Check built content
+        run: ls -R gh-pages/combined-report  
 
       - name: Deploy to GitHub Pages 🚀
         uses: peaceiris/actions-gh-pages@v3
