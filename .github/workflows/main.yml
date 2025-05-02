@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        browsers: [chrome, firefox, edge]
+        browser: [chrome, firefox, edge]
 
     steps:
       - name: Checkout repo
@@ -19,28 +19,27 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Allure reporter
+      - name: Install Allure reporter and CLI
         run: |
           npm install mocha-allure-reporter --save-dev
           npm install -g allure-commandline --save-dev
 
-      - name: Run Cypress tests in ${{ matrix.browsers }}
+      - name: Run Cypress tests in ${{ matrix.browser }}
         uses: cypress-io/github-action@v6
         with:
-          browser: ${{ matrix.browsers }}
-          command: npx cypress run --browser ${{ matrix.browsers }}
+          browser: ${{ matrix.browser }}
+          command: npx cypress run --browser ${{ matrix.browser }}
 
-      - name: Generate Allure results for ${{ matrix.browsers }}
+      - name: Generate Allure HTML report
         run: |
-          mkdir -p allure-results
-          # В случае, если Allure хранит результаты в другом месте, отрегулируйте путь
-          echo "Results for ${{ matrix.browsers }} ready"
+          mkdir -p allure-report
+          npx allure generate allure-results --clean -o allure-report
 
-      - name: Upload Allure results as artifact
+      - name: Upload Allure report as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: allure-results-${{ matrix.browsers }}
-          path: allure-results
+          name: allure-report-${{ matrix.browser }}
+          path: allure-report
 
   deploy-gh-pages:
     needs: cypress-run
@@ -51,25 +50,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download Allure results (all artifacts)
+      - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
           path: downloaded-artifacts
 
-      - name: List downloaded artifacts (debug)
-        run: ls -R downloaded-artifacts
-
-      - name: Combine Allure results
+      - name: Merge all Allure results
         run: |
-          mkdir -p combined-results
-          find downloaded-artifacts -type d -name 'allure-results*' -exec cp -r {}/* combined-results/ \;
-
-      - name: Generate Allure HTML Report
-        run: |
-          npx allure generate combined-results --clean -o allure-report
+          mkdir -p combined-report
+          find downloaded-artifacts -type d -exec cp -r {}/* combined-report/ \;
+          ls -R combined-report
 
       - name: Deploy to GitHub Pages 🚀
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: allure-report
+          publish_dir: combined-report
