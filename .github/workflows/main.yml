@@ -28,7 +28,7 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           browser: ${{ matrix.browser }}
-          command: npx cypress run --browser ${{ matrix.browser }}
+          command: npx cypress run --browser ${{ matrix.browser }} --reporter mocha-allure-reporter
 
       - name: Generate Allure HTML report
         run: |
