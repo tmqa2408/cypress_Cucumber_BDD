@@ -50,6 +50,7 @@ jobs:
         run: |
           mkdir -p combined-results
           find downloaded-artifacts -type d -exec cp -r {}/* combined-report/ \;
+          ls -R combined-report
 
       - name: Generate Allure report
         uses: simple-elf/allure-report-action@v1.8
