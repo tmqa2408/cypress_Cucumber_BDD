@@ -1,34 +1,43 @@
-name: deploy-gh-pages
+name: Cypress Allure Report
+
 on:
-  workflow_run:
-    workflows: ["cypress-run (chrome)"]
-    types:
-      - completed
+  push:
+    branches: [main]
 
 jobs:
-  deploy:
+  cypress-tests:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Download allure-results artifact
-        uses: actions/download-artifact@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          name: allure-results-chrome
-          path: allure-results
+          node-version: 18
 
-      - name: Generate Allure HTML report
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Cypress tests with Allure reporter
         run: |
-          npm install -g allure-commandline
+          npx cypress run --browser chrome --reporter mocha-allure-reporter --reporter-options resultsDir=allure-results
+
+      - name: Install Allure CLI
+        run: npm install -g allure-commandline
+
+      - name: Generate Allure report
+        run: |
           allure generate allure-results --clean -o gh-pages
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy Allure report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./gh-pages
           publish_branch: gh-pages
+
 
 
 

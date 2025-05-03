@@ -6,11 +6,16 @@ module.exports = defineConfig({
   e2e: {
     baseUrl: 'https://ecommerce-playground.lambdatest.io/index.php?route=common/home',
     specPattern: '**/*.feature',
+    supportFile: false,
     setupNodeEvents(on, config) {
       on('file:preprocessor', cucumber());
       allureWriter(on, config);
       return config;
     },
-    supportFile: false
   },
+  reporter: 'mocha-allure-reporter',
+  reporterOptions: {
+    resultsDir: 'allure-results'
+  }
 });
+
