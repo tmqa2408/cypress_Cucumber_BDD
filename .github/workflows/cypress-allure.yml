@@ -14,7 +14,7 @@ jobs:
     name: Run tests in ${{ matrix.browser }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -28,7 +28,7 @@ jobs:
         run: npx cypress run --browser ${{ matrix.browser }}
 
       - name: Upload Allure results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: allure-results-${{ matrix.browser }}
           path: allure-results
@@ -39,22 +39,22 @@ jobs:
     name: Merge Allure results and generate report
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download Allure artifacts for chrome
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: allure-results-chrome
           path: downloaded-artifacts/chrome
 
       - name: Download Allure artifacts for firefox
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: allure-results-firefox
           path: downloaded-artifacts/firefox
 
       - name: Download Allure artifacts for edge
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: allure-results-edge
           path: downloaded-artifacts/edge
@@ -82,7 +82,7 @@ jobs:
           ls -l allure-report || echo "Allure report not generated"
 
       - name: Upload Allure Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: allure-report
           path: allure-report
