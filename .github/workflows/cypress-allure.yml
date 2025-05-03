@@ -1,0 +1,73 @@
+name: cypress-allure
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser: [chrome, firefox, edge]
+    name: Run tests in ${{ matrix.browser }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Cypress tests
+        env:
+          CYPRESS_BROWSER: ${{ matrix.browser }}
+        run: |
+          npx cypress run --browser $CYPRESS_BROWSER || true
+
+      - name: Upload Allure Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: allure-results-${{ matrix.browser }}
+          path: cypress/allure-results/
+
+  generate-report:
+    needs: run-tests
+    runs-on: ubuntu-latest
+    name: Generate and deploy Allure report
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Download Allure Results
+        uses: actions/download-artifact@v3
+        with:
+          path: downloaded-results
+
+      - name: Merge Allure Results
+        run: |
+          mkdir -p merged-results
+          find downloaded-results -type d -name "history" -exec cp -r {} merged-results/ \; || true
+          find downloaded-results -type f -name "*.json" -exec cp {} merged-results/ \;
+
+      - name: Install Allure
+        run: |
+          wget https://github.com/allure-framework/allure2/releases/latest/download/allure-2.27.0.tgz
+          tar -xvzf allure-2.27.0.tgz
+          sudo mv allure-2.27.0 /opt/allure
+          sudo ln -s /opt/allure/bin/allure /usr/bin/allure
+
+      - name: Generate Allure Report
+        run: |
+          allure generate merged-results --clean -o allure-report
+
+      - name: Deploy Allure Report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: allure-report
