@@ -49,7 +49,7 @@ jobs:
       - name: Combine Allure results
         run: |
           mkdir -p combined-results
-          find all-results -type d -name 'allure-results*' -exec cp -r {}/* combined-results/ \;
+          find downloaded-artifacts -type d -exec cp -r {}/* combined-report/ \;
 
       - name: Generate Allure report
         uses: simple-elf/allure-report-action@v1.8
