@@ -1,71 +1,109 @@
-name: Cypress Tests with Allure + GitHub Pages
-
+name: deploy-gh-pages
 on:
-  push:
-  workflow_dispatch:
+  workflow_run:
+    workflows: ["cypress-run (chrome)"]
+    types:
+      - completed
 
 jobs:
-  cypress-run:
+  deploy:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        browser: [chrome, firefox, edge]
-
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install Allure reporter and CLI
-        run: |
-          npm install mocha-allure-reporter --save-dev
-          npm install -g allure-commandline --save-dev
-
-      - name: Run Cypress tests in ${{ matrix.browser }}
-        uses: cypress-io/github-action@v6
-        with:
-          browser: ${{ matrix.browser }}
-          command: npx cypress run --browser ${{ matrix.browser }} --reporter mocha-allure-reporter
-
-      - name: Upload Allure results
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-results-${{ matrix.browser }}
-          path: allure-results
-
-  deploy-gh-pages:
-    needs: cypress-run
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Download all allure-results artifacts
+      - name: Download allure-results artifact
         uses: actions/download-artifact@v4
         with:
-          path: downloaded-artifacts
-
-      - name: Merge Allure results
-        run: |
-          mkdir -p merged-results
-          find downloaded-artifacts -type d -name 'allure-results*' -exec cp -r {}/* merged-results/ \;
-          ls -R merged-results
+          name: allure-results-chrome
+          path: allure-results
 
       - name: Generate Allure HTML report
         run: |
           npm install -g allure-commandline
-          npx allure generate merged-results --clean -o gh-pages
+          allure generate allure-results --clean -o gh-pages
 
-      - name: Add .nojekyll to prevent GitHub Pages ignoring folders starting with "_"
-        run: touch gh-pages/.nojekyll
-
-      - name: Deploy to GitHub Pages 🚀
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./gh-pages
+          publish_branch: gh-pages
+
+
+
+
+
+
+
+# name: Cypress Tests with Allure + GitHub Pages
+
+# on:
+#   push:
+#   workflow_dispatch:
+
+# jobs:
+#   cypress-run:
+#     runs-on: ubuntu-latest
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#         browser: [chrome, firefox, edge]
+
+#     steps:
+#       - name: Checkout repo
+#         uses: actions/checkout@v4
+
+#       - name: Install dependencies
+#         run: npm ci
+
+#       - name: Install Allure reporter and CLI
+#         run: |
+#           npm install mocha-allure-reporter --save-dev
+#           npm install -g allure-commandline --save-dev
+
+#       - name: Run Cypress tests in ${{ matrix.browser }}
+#         uses: cypress-io/github-action@v6
+#         with:
+#           browser: ${{ matrix.browser }}
+#           command: npx cypress run --browser ${{ matrix.browser }} --reporter mocha-allure-reporter
+
+#       - name: Upload Allure results
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: allure-results-${{ matrix.browser }}
+#           path: allure-results
+
+#   deploy-gh-pages:
+#     needs: cypress-run
+#     runs-on: ubuntu-latest
+#     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+
+#     steps:
+#       - name: Checkout repo
+#         uses: actions/checkout@v4
+
+#       - name: Download all allure-results artifacts
+#         uses: actions/download-artifact@v4
+#         with:
+#           path: downloaded-artifacts
+
+#       - name: Merge Allure results
+#         run: |
+#           mkdir -p merged-results
+#           find downloaded-artifacts -type d -name 'allure-results*' -exec cp -r {}/* merged-results/ \;
+#           ls -R merged-results
+
+#       - name: Generate Allure HTML report
+#         run: |
+#           npm install -g allure-commandline
+#           npx allure generate merged-results --clean -o gh-pages
+
+#       - name: Add .nojekyll to prevent GitHub Pages ignoring folders starting with "_"
+#         run: touch gh-pages/.nojekyll
+
+#       - name: Deploy to GitHub Pages 🚀
+#         uses: peaceiris/actions-gh-pages@v3
+#         with:
+#           github_token: ${{ secrets.GITHUB_TOKEN }}
+#           publish_dir: ./gh-pages
