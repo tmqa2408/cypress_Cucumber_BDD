@@ -44,7 +44,7 @@ jobs:
       - name: Download all Allure results
         uses: actions/download-artifact@v4
         with:
-          path: all-results
+          path: downloaded-artifacts
 
       - name: Combine Allure results
         run: |
