@@ -4,6 +4,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
 
       - name: Install dependencies
         run: npm install
@@ -13,10 +15,10 @@ jobs:
           npm install mocha-allure-reporter --save-dev
           npm install -g allure-commandline --save-dev
 
-      - name: Run Cypress tests
-        uses: cypress-io/github-action@v6
-        with:
-          command: npx cypress run --reporter mocha-allure-reporter
+      # - name: Run Cypress tests
+      #   uses: cypress-io/github-action@v6
+      #   with:
+      #     command: npx cypress run --reporter mocha-allure-reporter
 
       - name: Load test report history
         uses: actions/checkout@v3
