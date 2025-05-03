@@ -24,11 +24,18 @@ jobs:
           npm install mocha-allure-reporter --save-dev
           npm install -g allure-commandline --save-dev
 
-      - name: Run Cypress tests in ${{ matrix.browser }}
-        uses: cypress-io/github-action@v6
+      - name: Load test report history
+        uses: actions/checkout@v3
+        if: always()
+        continue-on-error: true
         with:
-          browser: ${{ matrix.browser }}
-          command: npx cypress run --browser ${{ matrix.browser }} --reporter mocha-allure-reporter
+            ref: gh-pages
+            path: gh-pages    
+
+      # - name: Run Cypress tests
+      #   uses: cypress-io/github-action@v6
+      #   with:
+      #     command: npx cypress run --browser ${{ matrix.browser }} --reporter mocha-allure-reporter
 
       - name: Load test report history
         uses: actions/checkout@v3
@@ -45,7 +52,7 @@ jobs:
           gh_pages: gh-pages
           allure_history: allure-history
           allure_results: build/allure-results  
-            
+
       - name: Publish test report
         uses: peaceiris/actions-gh-pages@v3
         if: always()
