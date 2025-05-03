@@ -6,13 +6,19 @@ module.exports = defineConfig({
   e2e: {
     baseUrl: 'https://ecommerce-playground.lambdatest.io/index.php?route=common/home',
     specPattern: '**/*.feature',
-    supportFile: false,
     setupNodeEvents(on, config) {
       on('file:preprocessor', cucumber());
-      allureWriter(on, config);
+      allureWriter(on, config); // обязательно для Allure
       return config;
     },
-  }
+    supportFile: false,
+    env: {
+      allure: true // включает генерацию Allure-результатов
+    },
+    experimentalRunAllSpecs: true, // (опционально) если хочешь запускать все feature-файлы подряд
+  },
 });
+
+
 
 
