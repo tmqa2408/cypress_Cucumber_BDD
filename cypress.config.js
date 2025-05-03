@@ -12,10 +12,7 @@ module.exports = defineConfig({
       allureWriter(on, config);
       return config;
     },
-  },
-  reporter: 'mocha-allure-reporter',
-  reporterOptions: {
-    resultsDir: 'allure-results'
   }
 });
+
 
