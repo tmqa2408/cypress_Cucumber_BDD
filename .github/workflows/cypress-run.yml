@@ -12,7 +12,7 @@ jobs:
       matrix:
         browser: [chrome, firefox, edge]
     name: Run Cypress tests on ${{ matrix.browser }}
-    
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -25,8 +25,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run Cypress tests
+      - name: Run Cypress tests on ${{ matrix.browser }}
         run: |
+          echo "BROWSER=${{ matrix.browser }}" > cypress.env.json
           npx cypress run --browser ${{ matrix.browser }} --e2e
 
       - name: Upload Allure results
