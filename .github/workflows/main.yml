@@ -4,11 +4,13 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Cypress run
-        uses: cypress-io/github-action@v6
+    
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install Dependencies
+        run: pnpm install
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v6   
 
       - name: Install Allure reporter and CLI
         run: |
