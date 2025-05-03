@@ -13,7 +13,6 @@ jobs:
             matrix:
                 browser: [chrome, firefox, edge]
         name: Run Cypress tests on ${{ matrix.browser }}
-
         steps:
             - name: Checkout repo
               uses: actions/checkout@v3  
