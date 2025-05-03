@@ -3,9 +3,12 @@ name: Cypress Tests with Dependency and Artifact Caching
 on: push
 
 jobs:
-  install:
+  test:
     runs-on: ubuntu-24.04
     steps:
+      - name: Insnstallnpm
+        run: npm install -g npm-check-updates
+
       - name: Checkout
         uses: actions/checkout@v4
 
