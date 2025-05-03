@@ -5,6 +5,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+      - name: Install dependencies
+        run: npm install
+
       - name: Install Allure reporter and CLI
         run: |
           npm install mocha-allure-reporter --save-dev
