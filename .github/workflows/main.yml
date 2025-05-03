@@ -1,51 +1,43 @@
-name: Run tests and publish report
-on: [push]
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-    
+name: Cypress Tests with Dependency and Artifact Caching
 
+on: push
+
+jobs:
+  install:
+    runs-on: ubuntu-24.04
+    steps:
       - name: Checkout
         uses: actions/checkout@v4
-      # Install npm dependencies, cache them correctly
-      # and run all Cypress tests
+
+      - name: Cypress install
+        uses: cypress-io/github-action@v6
+        with:
+          # Disable running of tests within install job
+          runTests: false
+          build: npm run build
+
+      - name: Save build folder
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          if-no-files-found: error
+          path: build
+
+  cypress-run:
+    runs-on: ubuntu-24.04
+    needs: install
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download the build folder
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: build
+
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
-          build: npm run build
           start: npm start
-
-      - name: Install Allure reporter and CLI
-        run: |
-          npm install mocha-allure-reporter --save-dev
-          npm install -g allure-commandline --save-dev
-
-      # - name: Run Cypress tests
-      #   uses: cypress-io/github-action@v6
-      #   with:
-      #     command: npx cypress run --reporter mocha-allure-reporter
-
-      - name: Load test report history
-        uses: actions/checkout@v3
-        if: always()
-        continue-on-error: true
-        with:
-          ref: gh-pages
-          path: gh-pages
-
-      - name: Build test report
-        uses: simple-elf/allure-report-action@v1.7
-        if: always()
-        with:
-          gh_pages: gh-pages
-          allure_history: allure-history
-          allure_results: build/allure-results
-
-      - name: Publish test report
-        uses: peaceiris/actions-gh-pages@v3
-        if: always()
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: allure-history
+          browser: chrome
