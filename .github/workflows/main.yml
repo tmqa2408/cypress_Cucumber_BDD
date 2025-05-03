@@ -6,7 +6,7 @@ jobs:
   test:
     runs-on: ubuntu-24.04
     steps:
-      - name: Insnstallnpm
+      - name: Insnstall npm
         run: npm install -g npm-check-updates
 
       - name: Checkout
