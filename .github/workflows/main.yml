@@ -4,10 +4,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
       - name: Install dependencies
         run: npm ci
 
@@ -16,13 +12,10 @@ jobs:
           npm install mocha-allure-reporter --save-dev
           npm install -g allure-commandline --save-dev
 
-      - name: Load test report history
-        uses: actions/checkout@v3
-        if: always()
-        continue-on-error: true
+      - name: Run Cypress tests
+        uses: cypress-io/github-action@v6
         with:
-            ref: gh-pages
-            path: gh-pages    
+          command: npx cypress run --reporter mocha-allure-reporter
 
       - name: Load test report history
         uses: actions/checkout@v3
@@ -30,7 +23,7 @@ jobs:
         continue-on-error: true
         with:
           ref: gh-pages
-          path: gh-pages    
+          path: gh-pages
 
       - name: Build test report
         uses: simple-elf/allure-report-action@v1.7
@@ -38,7 +31,7 @@ jobs:
         with:
           gh_pages: gh-pages
           allure_history: allure-history
-          allure_results: build/allure-results  
+          allure_results: build/allure-results
 
       - name: Publish test report
         uses: peaceiris/actions-gh-pages@v3
@@ -46,5 +39,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: allure-history      
-
+          publish_dir: allure-history
