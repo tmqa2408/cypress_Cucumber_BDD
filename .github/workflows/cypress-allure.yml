@@ -1,66 +1,80 @@
-name: Cypress Tests with Allure
+name: Cypress Tests with Allure for Multiple Browsers
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   run-tests:
-    runs-on: ubuntu-latest
     strategy:
       matrix:
         browser: [chrome, firefox, edge]
-
+    runs-on: ubuntu-latest
+    name: Run tests in ${{ matrix.browser }}
     steps:
-      - name: Checkout repo
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Run Cypress tests on ${{ matrix.browser }}
+      - name: Run Cypress tests in ${{ matrix.browser }}
         run: npx cypress run --browser ${{ matrix.browser }}
 
-      - name: Upload Allure results for ${{ matrix.browser }}
+      - name: Upload Allure Results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure-results-${{ matrix.browser }}
-          path: cypress/allure-results
-          if-no-files-found: ignore
+          path: cypress-logs/allure-results
 
-  merge-and-publish-report:
+  merge-and-generate-report:
     needs: run-tests
     runs-on: ubuntu-latest
+    name: Merge Allure Results and Generate Report
     steps:
-      - name: Checkout repo
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Download all Allure results
+      - name: Download Allure Results
         uses: actions/download-artifact@v4
         with:
           path: downloaded-artifacts
+          merge-multiple: true
 
-      - name: Combine Allure results
+      - name: Merge Allure Results
         run: |
           mkdir -p combined-results
-          find downloaded-artifacts -type d -exec cp -r {}/* combined-report/ \;
-          ls -R combined-report
+          if [ -d "downloaded-artifacts" ]; then
+            find downloaded-artifacts -type d -exec cp -r {}/* combined-results/ \;
+          else
+            echo "No artifacts found to merge."
+            exit 1
+          fi
 
-      - name: Generate Allure report
-        uses: simple-elf/allure-report-action@v1.8
+      - name: Generate Allure Report
+        uses: simple-elf/allure-report-action@v1.7
         with:
           allure_results: combined-results
           allure_report: allure-report
-          keep_reports: true
+          allure_history: allure-history
 
-      - name: Upload Allure HTML report
+      - name: Upload Allure Report
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
           path: allure-report
+
+      - name: Deploy Allure Report to GitHub Pages
+        if: github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: allure-report
