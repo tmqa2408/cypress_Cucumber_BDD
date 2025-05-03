@@ -31,10 +31,16 @@ jobs:
       - name: Run Cypress tests
         run: npx cypress run --browser ${{ matrix.browser }}
 
-      - name: Debug: List Allure results
+      - name: Debug- List Allure results
+        shell: bash
         run: |
-          echo "Checking allure-results folder:"
-          ls -la cypress-logs/allure-results || echo "Directory not found"
+          echo "Checking Allure results directory..."
+          if [ -d "cypress-logs/allure-results" ]; then
+            ls -R cypress-logs/allure-results
+          else
+            echo "Allure results directory not found."
+          fi
+      
 
       - name: Upload Allure results
         if: always()
