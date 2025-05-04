@@ -11,6 +11,7 @@
     "cypress": "^14.3.2",
     "cypress-cucumber-preprocessor": "^4.3.1",
     "mocha-allure-reporter": "^1.4.0",
+    "prettier": "^3.5.3",
     "ts-loader": "^9.5.2",
     "typescript": "^5.8.3"
   },
