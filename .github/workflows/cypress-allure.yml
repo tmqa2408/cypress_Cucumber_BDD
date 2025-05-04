@@ -116,5 +116,5 @@ jobs:
           body: >
             <p>Привет!</p>
             <p>Отчет о выполнении автотестов доступен по ссылке:</p>
-            <p><a href="https://tmqa2408.github.io/cypress_Cucumber_BDD/combined-report">Открыть Allure отчёт</a></p>
+            <p><a href="https://tmqa2408.github.io/cypress_Cucumber_BDD/">Открыть Allure отчёт</a></p>
             <p>Хорошего дня!</p>
