@@ -29,7 +29,8 @@ jobs:
         run: npx cypress verify
 
       - name: Run Cypress tests on ${{ matrix.browser }}
-        run: npx cypress run --browser ${{ matrix.browser }}
+        run: npx npx cypress run --browser ${{ matrix.browser }} --reporter mocha-allure-reporter
+
 
       - name: "Debug: Check allure-results"
         run: |
