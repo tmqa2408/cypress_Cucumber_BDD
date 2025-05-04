@@ -89,3 +89,38 @@ jobs:
         with:
           name: allure-report
           path: allure-report
+
+  deploy-gh-pages:
+    
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: downloaded-artifacts
+
+    - name: Merge all Allure results
+      run: |
+        mkdir -p combined-report
+        find downloaded-artifacts -type d -exec cp -r {}/* combined-report/ \;
+        ls -R combined-report
+
+    - name: Ensure publish dir exists
+      run: mkdir -p gh-pages/combined-report
+    
+    - name: Add .nojekyll file
+      run: touch gh-pages/combined-report/.nojekyll
+        
+    - name: Check built content
+      run: ls -R gh-pages/combined-report  
+
+    - name: Deploy to GitHub Pages 🚀
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./gh-pages/combined-report         
