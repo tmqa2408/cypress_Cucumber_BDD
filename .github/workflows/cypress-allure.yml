@@ -41,6 +41,11 @@ jobs:
           echo "Check allure-results:"
           ls -la allure-results || echo "Directory 'allure-results' not found"
 
+      - name: Generate Allure HTML report
+        run: |
+            mkdir -p allure-report
+            npx allure generate allure-results --clean -o allure-report 
+
       - name: Upload Allure results
         if: success() && hashFiles('allure-results/**') != ''
         uses: actions/upload-artifact@v4
