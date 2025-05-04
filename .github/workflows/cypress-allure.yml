@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        browser: [chrome]
+        browser: [chrome, firefox, edge]
 
     name: Run tests in ${{ matrix.browser }}
 
@@ -76,17 +76,16 @@ jobs:
           echo "Downloaded artifacts:"
           ls -R downloaded-artifacts || echo "Nothing found"
 
-      - name: Combine results
+      - name: Combine Allure results
         run: |
-          mkdir -p combined-results
-          if [ -d "downloaded-artifacts" ]; then
-            find downloaded-artifacts -type d -exec cp -r {}/* combined-results/ \;
-          else
-            echo "No artifacts found to merge."
-            exit 1
-          fi
-          echo "Contents of combined-results:"
-          ls -R combined-results || echo "No results found"
+            mkdir -p combined-results
+            echo "Copying contents of each artifact directory..."
+            for dir in downloaded-artifacts/*; do
+                echo "Processing $dir"
+                cp -r "$dir"/* combined-results/ || echo "Nothing to copy from $dir"
+            done
+            echo "Contents of combined-results:"
+            ls -R combined-results || echo "combined-results is empty"
 
       - name: Generate Allure report
         run: |
