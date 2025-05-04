@@ -31,7 +31,7 @@ jobs:
       - name: Run Cypress tests on ${{ matrix.browser }}
         run: npx cypress run --browser ${{ matrix.browser }}
 
-      - name: Debug: Check allure-results
+      - name: "Debug: Check allure-results"
         run: |
           echo "Current directory:"
           pwd
@@ -60,7 +60,7 @@ jobs:
         with:
           path: downloaded-artifacts
 
-      - name: Debug: Show downloaded artifacts
+      - name: "Debug: Show downloaded artifacts"
         run: |
           echo "Downloaded artifacts:"
           ls -R downloaded-artifacts || echo "Nothing found"
