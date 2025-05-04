@@ -88,34 +88,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download all artifacts
+      - name: Download Allure report artifact
         uses: actions/download-artifact@v4
         with:
-          path: downloaded-artifacts
-
-      - name: Combine Allure results
-        run: |
-          mkdir -p combined-results
-          for dir in downloaded-artifacts/allure-results-*; do
-            echo "Copying from $dir"
-            cp -r "$dir"/* combined-results/ || echo "Nothing to copy from $dir"
-          done
-          ls -R combined-results || echo "combined-results is empty"
-
-      - name: Merge Allure results
-        run: |
-          mkdir -p combined-report
-          find downloaded-artifacts -type d -exec cp -r {}/* combined-report/ \;
-          ls -R combined-report
-
-      - name: Ensure publish dir exists
-        run: mkdir -p gh-pages/combined-report
+          name: allure-report
+          path: gh-pages/combined-report
 
       - name: Add .nojekyll file
         run: touch gh-pages/combined-report/.nojekyll
-
-      - name: Check built content
-        run: ls -R gh-pages/combined-report
 
       - name: Deploy to GitHub Pages 🚀
         uses: peaceiris/actions-gh-pages@v3
