@@ -113,6 +113,25 @@ jobs:
       with:
         path: downloaded-artifacts
 
+    - name: Unzip all artifacts
+      run: |
+          mkdir -p combined-results
+          for archive in downloaded-artifacts/*; do
+            echo "Unzipping $archive"
+            unzip -q "$archive" -d "$archive"
+          done
+          
+    - name: Combine Allure results
+      run: |
+          echo "Merging allure-results-* folders..."
+          for dir in downloaded-artifacts/allure-results-*; do
+            echo "Copying from $dir"
+            cp -r "$dir"/* combined-results/ || echo "Nothing to copy from $dir"
+          done
+          echo "Contents of combined-results:"
+          ls -R combined-results || echo "combined-results is empty"
+
+
     - name: Merge all Allure results
       run: |
         mkdir -p combined-report
