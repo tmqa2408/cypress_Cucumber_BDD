@@ -91,7 +91,7 @@ jobs:
           path: allure-report
 
   deploy-gh-pages:
-    
+    needs: generate-report
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
 
