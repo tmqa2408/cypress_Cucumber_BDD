@@ -21,6 +21,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install Allure reporter and CLI
+        run: |
+          npm install mocha-allure-reporter --save-dev
+          npm install -g allure-commandline --save-dev
+
       - name: Run Cypress tests in Chrome
         run: npx cypress run --browser chrome --reporter mocha-allure-reporter
 
