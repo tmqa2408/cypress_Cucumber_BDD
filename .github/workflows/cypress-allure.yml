@@ -12,7 +12,7 @@ jobs:
   run-tests:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false # <-- Добавлено
+      fail-fast: false
       matrix:
         browser: [chrome, firefox, edge]
     name: Run tests in ${{ matrix.browser }}
@@ -37,14 +37,20 @@ jobs:
         run: npx cypress verify
 
       - name: Run Cypress tests on ${{ matrix.browser }}
-        run: npx cypress run --browser ${{ matrix.browser }} --reporter mocha-allure-reporter || echo "Tests failed on ${{ matrix.browser }} but continuing"
+        run: |
+          mkdir -p allure-results-${{ matrix.browser }}
+          npx cypress run \
+            --browser ${{ matrix.browser }} \
+            --reporter mocha-allure-reporter \
+            --reporter-options allureResultsDir=allure-results-${{ matrix.browser }} \
+            || echo "Tests failed on ${{ matrix.browser }} but continuing"
 
       - name: Upload Allure results
-        if: always() # <-- Загружать даже если тесты упали
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure-results-${{ matrix.browser }}
-          path: allure-results/*
+          path: allure-results-${{ matrix.browser }}
 
   generate-report:
     needs: run-tests
