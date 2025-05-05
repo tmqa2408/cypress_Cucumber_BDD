@@ -1,22 +1,21 @@
 class HomePage {
-
   enterURL() {
-    
     // cy.visit(Cypress.env('URL'));
-    cy.visit('')
-
+    cy.visit('');
   }
 
   verifyPageTitle() {
-    return cy.title().should("eq", "Your Store");
+    return cy.title().should('eq', 'Your Store');
   }
 
   verifyText() {
-    return cy.contains('Top Trending Categories')
+    return cy.contains('Tip Trending Categories');
   }
 
   clickSubmitButton() {
-    return cy.get('#mz-product-listing-image-39217984-0-1 > .carousel-inner > .active > .lazy-load').click()
+    return cy
+      .get('#mz-product-listing-image-39217984-0-1 > .carousel-inner > .active > .lazy-load')
+      .click();
   }
 
   // validateCode() {
@@ -24,8 +23,8 @@ class HomePage {
   // }
 
   validateText() {
-    cy.get('.h3').contains('Apple Cinema 30"')
-    }
+    cy.get('.h3').contains('Apple Cinema 30"');
+  }
 }
 const homepage = new HomePage();
 export default homepage;
