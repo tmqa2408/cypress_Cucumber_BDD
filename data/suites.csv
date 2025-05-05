@@ -1,0 +1,6 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","195","Check 200 Page (example #1)","","Mon May 05 17:52:43 UTC 2025","passed","Mon May 05 17:52:43 UTC 2025","","I want check respose code at a Links Page","I want check respose code at a Links Page","Check 200 Page (example #1)"
+"","1938","I go to the Home Page Website","","Mon May 05 17:52:38 UTC 2025","failed","Mon May 05 17:52:40 UTC 2025","","I want check some Eleevenys at a Home Page","I want check some Eleevenys at a Home Page","I go to the Home Page Website"
+"","2770","Login as new sign up user with valid data","","Mon May 05 17:52:46 UTC 2025","passed","Mon May 05 17:52:49 UTC 2025","","I want to login into the site with valid data","I want to login into the site with valid data","Login as new sign up user with valid data"
+"","81","Check 200 Page (example #2)","","Mon May 05 17:52:43 UTC 2025","passed","Mon May 05 17:52:43 UTC 2025","","I want check respose code at a Links Page","I want check respose code at a Links Page","Check 200 Page (example #2)"
+"","64","Check 200 Page (example #3)","","Mon May 05 17:52:43 UTC 2025","passed","Mon May 05 17:52:43 UTC 2025","","I want check respose code at a Links Page","I want check respose code at a Links Page","Check 200 Page (example #3)"
