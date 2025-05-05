@@ -1,7 +1,14 @@
 class HomePage {
   enterURL() {
-    // cy.visit(Cypress.env('URL'));
     cy.visit('');
+  }
+
+  validateBrowser() {
+    const expectedBrowser = 'chrome'; // измени по желанию
+    const actual = Cypress.browser.name;
+    expect(actual, `Ожидался браузер "${expectedBrowser}", а запущен "${actual}"`).to.eq(
+      expectedBrowser
+    );
   }
 
   verifyPageTitle() {
@@ -18,13 +25,10 @@ class HomePage {
       .click();
   }
 
-  // validateCode() {
-  // cy.request(URL).response.status().to.eq(200)
-  // }
-
   validateText() {
     cy.get('.h3').contains('Apple Cinema 30"');
   }
 }
+
 const homepage = new HomePage();
 export default homepage;

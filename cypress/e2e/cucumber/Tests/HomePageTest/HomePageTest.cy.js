@@ -1,26 +1,26 @@
-import { Given, When, Then, And } from "cypress-cucumber-preprocessor/steps"
-import homepage from "../../Pages/HomePage/HomePage.cy";
- 
-Given("I navigate to the HomePage Website", () => {
-    homepage.enterURL();
+import { Given, When, Then, And } from 'cypress-cucumber-preprocessor/steps';
+import homepage from '../../Pages/HomePage/HomePage.cy';
+
+Given('I navigate to the HomePage Website', () => {
+  homepage.enterURL();
 });
 
-When("I validate the title", () => {
-    homepage.verifyPageTitle();
+Then('I validate the browser', () => {
+  homepage.validateBrowser();
 });
 
-Then("I validate Top Trending Categories are present", () => {
-    homepage.verifyText();
+When('I validate the title', () => {
+  homepage.verifyPageTitle();
 });
 
-And("I click Laptops section", () => {
-    homepage.clickSubmitButton()
+Then('I validate Top Trending Categories are present', () => {
+  homepage.verifyText();
 });
 
-// And("I validate the code response", () => {
-//     homepage.validateCode()
-// });
+And('I click Laptops section', () => {
+  homepage.clickSubmitButton();
+});
 
-Then("I validate if this a Laptop page", () => {
-    homepage.validateText();
+Then('I validate if this a Laptop page', () => {
+  homepage.validateText();
 });
