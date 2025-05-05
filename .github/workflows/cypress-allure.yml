@@ -27,7 +27,9 @@ jobs:
           npm install -g allure-commandline --save-dev
 
       - name: Run Cypress tests in Chrome
-        run: npx cypress run --browser chrome --reporter mocha-allure-reporter
+        id: cypress
+        run: |
+          npx cypress run --browser chrome --reporter mocha-allure-reporter || echo "status=failed" >> $GITHUB_OUTPUT
 
       - name: Upload Allure Results
         if: always()
@@ -35,6 +37,10 @@ jobs:
         with:
           name: allure-results
           path: allure-results
+
+      - name: Fail job if tests failed
+        if: steps.cypress.outputs.status == 'failed'
+        run: exit 1
 
   build-allure-report:
     runs-on: ubuntu-latest
