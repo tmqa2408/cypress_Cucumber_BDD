@@ -43,6 +43,7 @@ jobs:
         run: exit 1
 
   build-allure-report:
+    if: always()
     runs-on: ubuntu-latest
     needs: run-tests
 
@@ -71,6 +72,7 @@ jobs:
           path: allure-report/*
 
   deploy-gh-pages:
+    if: always()
     runs-on: ubuntu-latest
     needs: build-allure-report
 
