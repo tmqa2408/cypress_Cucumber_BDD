@@ -39,6 +39,11 @@ jobs:
       - name: Run Cypress tests on ${{ matrix.browser }}
         run: npx cypress run --browser ${{ matrix.browser }} --reporter mocha-allure-reporter || echo "Tests failed on ${{ matrix.browser }} but continuing"
 
+      - name: Debug allure-results contents
+        run: |
+          echo "Listing contents of allure-results before moving:"
+          ls -la allure-results
+
       - name: Rename allure-results directory
         run: |
           mkdir -p allure-results-${{ matrix.browser }}
@@ -69,11 +74,7 @@ jobs:
           mkdir -p combined-results
           for dir in downloaded-artifacts/*; do
             echo "Processing $dir"
-            if [ -d "$dir/allure-results" ]; then
-              cp -r "$dir/allure-results"/* combined-results/ || echo "No files to copy from $dir"
-            else
-              echo "$dir/allure-results not found"
-            fi
+            cp -r "$dir"/* combined-results/ || echo "Nothing to copy from $dir"
           done
           echo "Contents of combined-results:"
           find combined-results -type f || echo "combined-results is empty"
