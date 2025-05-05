@@ -39,11 +39,15 @@ jobs:
       - name: Run Cypress tests on ${{ matrix.browser }}
         run: |
           mkdir -p allure-results-${{ matrix.browser }}
-          npx cypress run \
-            --browser ${{ matrix.browser }} \
-            --reporter mocha-allure-reporter \
-            --reporter-options allureResultsDir=allure-results-${{ matrix.browser }} \
-            || echo "Tests failed on ${{ matrix.browser }} but continuing"
+          npx cypress run --browser ${{ matrix.browser }} --reporter mocha-allure-reporter || echo "Tests failed on ${{ matrix.browser }} but continuing"
+          mv allure-results allure-results-${{ matrix.browser }} || echo "No results to move for ${{ matrix.browser }}"
+
+      - name: Check and upload Allure results
+        if: always()
+        run: |
+          echo "Contents of allure-results-${{ matrix.browser }}:"
+          ls -la allure-results-${{ matrix.browser }} || echo "Directory not found"
+        shell: bash
 
       - name: Upload Allure results
         if: always()
@@ -64,14 +68,19 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: downloaded-artifacts
+          merge-multiple: false
 
       - name: Combine Allure results
         run: |
           mkdir -p combined-results
-          for dir in downloaded-artifacts/*; do
-            echo "Processing $dir"
-            cp -r "$dir"/* combined-results/ || echo "Nothing to copy from $dir"
-          done
+          if [ -d "downloaded-artifacts" ] && [ "$(ls -A downloaded-artifacts)" ]; then
+            for dir in downloaded-artifacts/*; do
+              echo "Processing $dir"
+              cp -r "$dir"/* combined-results/ || echo "Nothing to copy from $dir"
+            done
+          else
+            echo "No downloaded artifacts found"
+          fi
           ls -R combined-results || echo "combined-results is empty"
 
       - name: Generate Allure report
