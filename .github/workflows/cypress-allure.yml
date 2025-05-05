@@ -37,17 +37,12 @@ jobs:
         run: npx cypress verify
 
       - name: Run Cypress tests on ${{ matrix.browser }}
+        run: npx cypress run --browser ${{ matrix.browser }} --reporter mocha-allure-reporter || echo "Tests failed on ${{ matrix.browser }} but continuing"
+
+      - name: Rename allure-results directory
         run: |
           mkdir -p allure-results-${{ matrix.browser }}
-          npx cypress run --browser ${{ matrix.browser }} --reporter mocha-allure-reporter || echo "Tests failed on ${{ matrix.browser }} but continuing"
-          mv allure-results allure-results-${{ matrix.browser }} || echo "No results to move for ${{ matrix.browser }}"
-
-      - name: Check and upload Allure results
-        if: always()
-        run: |
-          echo "Contents of allure-results-${{ matrix.browser }}:"
-          ls -la allure-results-${{ matrix.browser }} || echo "Directory not found"
-        shell: bash
+          mv allure-results allure-results-${{ matrix.browser }}
 
       - name: Upload Allure results
         if: always()
@@ -68,20 +63,20 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: downloaded-artifacts
-          merge-multiple: false
 
       - name: Combine Allure results
         run: |
           mkdir -p combined-results
-          if [ -d "downloaded-artifacts" ] && [ "$(ls -A downloaded-artifacts)" ]; then
-            for dir in downloaded-artifacts/*; do
-              echo "Processing $dir"
-              cp -r "$dir"/* combined-results/ || echo "Nothing to copy from $dir"
-            done
-          else
-            echo "No downloaded artifacts found"
-          fi
-          ls -R combined-results || echo "combined-results is empty"
+          for dir in downloaded-artifacts/*; do
+            echo "Processing $dir"
+            if [ -d "$dir/allure-results" ]; then
+              cp -r "$dir/allure-results"/* combined-results/ || echo "No files to copy from $dir"
+            else
+              echo "$dir/allure-results not found"
+            fi
+          done
+          echo "Contents of combined-results:"
+          find combined-results -type f || echo "combined-results is empty"
 
       - name: Generate Allure report
         run: |
