@@ -1,132 +1,85 @@
-name: Run Cypress Tests with Allure Reports
+name: Cypress Chrome + Allure
 
 on:
-  push:
-    branches: [main]
-  pull_request:
   schedule:
-    - cron: '0 12 * * 1-5' # 6 AM Monday to Friday in GMT-6 (Colorado Springs)
+    - cron: '0 12 * * 1-5' # 6:00 AM GMT-6 → 12:00 UTC
   workflow_dispatch:
 
 jobs:
   run-tests:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        browser: [chrome, firefox, edge]
-    name: Run tests in ${{ matrix.browser }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Allure reporter and CLI
-        run: |
-          npm install mocha-allure-reporter --save-dev
-          npm install -g allure-commandline --save-dev
+      - name: Run Cypress tests in Chrome
+        run: npx cypress run --browser chrome
 
-      - name: Verify Cypress is installed
-        run: npx cypress verify
-
-      - name: Run Cypress tests on ${{ matrix.browser }}
-        run: npx cypress run --browser ${{ matrix.browser }} --reporter mocha-allure-reporter || echo "Tests failed on ${{ matrix.browser }} but continuing"
-
-      - name: Debug allure-results contents
-        run: |
-          echo "Listing contents of allure-results before moving:"
-          ls -la allure-results
-
-      - name: Rename allure-results directory
-        run: |
-          mkdir -p allure-results-${{ matrix.browser }}
-          mv allure-results allure-results-${{ matrix.browser }}
-
-      - name: Upload Allure results
-        if: always()
+      - name: Upload Allure Results
         uses: actions/upload-artifact@v4
         with:
-          name: allure-results-${{ matrix.browser }}
-          path: allure-results-${{ matrix.browser }}
+          name: allure-results
+          path: allure-results
 
-  generate-report:
-    needs: run-tests
+  build-allure-report:
     runs-on: ubuntu-latest
-    name: Generate merged Allure report
+    needs: run-tests
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-      - name: Download artifacts
+      - name: Download Allure results
         uses: actions/download-artifact@v4
         with:
-          path: downloaded-artifacts
+          name: allure-results
+          path: allure-results
 
-      - name: Combine Allure results
-        run: |
-          mkdir -p combined-results
-          for dir in downloaded-artifacts/*; do
-            echo "Processing $dir"
-            cp -r "$dir"/* combined-results/ || echo "Nothing to copy from $dir"
-          done
-          echo "Contents of combined-results:"
-          find combined-results -type f || echo "combined-results is empty"
+      - name: Install Allure CLI
+        run: npm install -g allure-commandline
 
-      - name: Generate Allure report
+      - name: Generate Allure Report
         run: |
-          npm install -g allure-commandline
-          allure generate combined-results --clean -o allure-report
+          allure generate allure-results --clean -o allure-report
           ls -R allure-report
 
-      - name: Upload Allure report
+      - name: Upload Allure Report as Artifact
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
           path: allure-report/*
 
-  deploy-gh-pages:
-    needs: generate-report
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Download Allure report artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: allure-report
-          path: gh-pages/combined-report
-
-      - name: Add .nojekyll file
-        run: touch gh-pages/combined-report/.nojekyll
-
-      - name: Deploy to GitHub Pages 🚀
+      - name: Deploy Allure Report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./gh-pages/combined-report
+          publish_dir: allure-report
+          publish_branch: gh-pages
 
-      - name: Send email with report link
+  send-email:
+    runs-on: ubuntu-latest
+    needs: build-allure-report
+
+    steps:
+      - name: Send Allure Report URL via Email
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
           server_port: 465
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: 'Allure Report for Cypress Tests'
+          subject: 'Allure Report: Cypress Chrome'
           to: tmqa2408@gmail.com
-          from: Cypress Bot <${{ secrets.EMAIL_USERNAME }}>
-          body: >
-            <p>Привет!</p>
-            <p>Отчет о выполнении автотестов доступен по ссылке:</p>
-            <p><a href="https://tmqa2408.github.io/cypress_Cucumber_BDD/">Открыть Allure отчёт</a></p>
-            <p>Хорошего дня!</p>
+          from: GitHub CI <${{ secrets.EMAIL_USERNAME }}>
+          body: |
+            ✅ Тесты завершены. Отчёт Allure доступен по ссылке:
+            👉 https://tmqa2408.github.io/cypress_Cucumber_BDD

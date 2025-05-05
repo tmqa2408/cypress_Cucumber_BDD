@@ -1,5 +1,5 @@
-const { defineConfig } = require("cypress");
-const cucumber = require("cypress-cucumber-preprocessor").default;
+const { defineConfig } = require('cypress');
+const cucumber = require('cypress-cucumber-preprocessor').default;
 const allureWriter = require('@shelex/cypress-allure-plugin/writer');
 
 module.exports = defineConfig({
@@ -15,10 +15,6 @@ module.exports = defineConfig({
     env: {
       allure: true // включает генерацию Allure-результатов
     },
-    experimentalRunAllSpecs: true, // (опционально) если хочешь запускать все feature-файлы подряд
-  },
+    experimentalRunAllSpecs: true // (опционально) если хочешь запускать все feature-файлы подряд
+  }
 });
-
-
-
-
