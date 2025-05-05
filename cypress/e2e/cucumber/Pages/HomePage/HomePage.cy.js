@@ -16,7 +16,7 @@ class HomePage {
   }
 
   verifyText() {
-    return cy.contains('Tip Trending Categories');
+    return cy.contains('Top Trending Categories');
   }
 
   clickSubmitButton() {
