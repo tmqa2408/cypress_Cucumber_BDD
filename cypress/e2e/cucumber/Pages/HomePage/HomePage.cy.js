@@ -4,7 +4,7 @@ class HomePage {
   }
 
   validateBrowser() {
-    const expectedBrowser = 'chrome'; // измени по желанию
+    const expectedBrowser = 'electron'; // измени по желанию
     const actual = Cypress.browser.name;
     expect(actual, `Ожидался браузер "${expectedBrowser}", а запущен "${actual}"`).to.eq(
       expectedBrowser
@@ -21,7 +21,7 @@ class HomePage {
 
   clickSubmitButton() {
     return cy
-      .get('#mz-product-listing-image-39217984-0-1 > .carousel-inner > .active > .lazy-load')
+      .cy.contains('Laptops')
       .click();
   }
 
