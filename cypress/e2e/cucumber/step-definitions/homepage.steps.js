@@ -10,7 +10,7 @@ When('I validate the title', () => {
   homepage.verifyPageTitle();
 });
 
-Then('I validate Tip Trending Categories are present', () => {
+Then('I validate Top Trending Categories are present', () => {
   homepage.verifyText();
 });
 
