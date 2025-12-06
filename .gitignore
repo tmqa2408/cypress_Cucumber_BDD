@@ -1,5 +1,13 @@
-node_modules
-allure-results/
-allure-report/
-.prettierignore
+node_modules/
+
+reports/
+tests/reports
+!reports/.gitkeep
+!reports/videos/.gitkeep
+!reports/screenshots/.gitkeep
+allure-report
+allure-results
+.idea
+.vscode
+cypress/videos
 screenshots/*
