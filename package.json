@@ -18,5 +18,8 @@
   "cypress-cucumber-preprocessor": {
     "nonGlobalStepDefinitions": false,
     "step_definitions": "cypress/e2e/cucumber/Tests"
+  },
+  "overrides": {
+    "glob": "^10.5.0"
   }
 }

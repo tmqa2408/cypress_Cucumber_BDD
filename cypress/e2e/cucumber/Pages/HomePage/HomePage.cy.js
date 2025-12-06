@@ -20,9 +20,24 @@ class HomePage {
   }
 
   clickSubmitButton() {
-    return cy
-      .cy.contains('Laptops')
-      .click();
+    // Scroll to the top of the page to ensure the menu is accessible
+    cy.scrollTo('top');
+    
+    // Wait for any animations to complete
+    cy.wait(1000);
+    
+    // Click the Components menu with more specific selector and force option
+    cy.get('a.nav-link:contains("Components")')
+      .first()
+      .scrollIntoView()
+      .should('be.visible')
+      .click({ force: true });
+
+    // Wait for the Laptops link to be visible and click it
+    return cy.contains('a', 'Laptops')
+      .should('be.visible')
+      .scrollIntoView()
+      .click({ force: true });
   }
 
   validateText() {
